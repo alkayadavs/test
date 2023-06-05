@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Real-time Speech Transcription</title>
+</head>
+<body>
+  <button id="microphoneButton">Start Transcription</button>
+  <div id="transcriptionResult"></div>
+
+  <script src="script.js"></script>
+</body>
+<script>
+
+  const microphoneButton = document.getElementById('microphoneButton');
+const transcriptionResult = document.getElementById('transcriptionResult');
+
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const recognition = new SpeechRecognition();
+
+recognition.continuous = true;
+recognition.interimResults = true;
+
+let finalTranscript = '';
+
+recognition.onresult = (event) => {
+  let interimTranscript = '';
+  for (let i = event.resultIndex; i < event.results.length; i++) {
+    const transcript = event.results[i][0].transcript;
+    if (event.results[i].isFinal) {
+      finalTranscript += transcript + ' ';
+    } else {
+      interimTranscript += transcript;
+    }
+  }
+  
+  transcriptionResult.innerHTML = finalTranscript + '<i>' + interimTranscript + '</i>';
+};
+
+microphoneButton.addEventListener('click', () => {
+  if (recognition.start) {
+    recognition.start();
+    microphoneButton.textContent = 'Stop Transcription';
+  } else {
+    recognition.stop();
+    microphoneButton.textContent = 'Start Transcription';
+  }
+});
+</script>
+</html>
